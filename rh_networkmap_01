@@ -1,0 +1,39 @@
+#import sys
+#sys.version
+#'3.5.1 |Anaconda 4.0.0 (64-bit)...
+
+import matplotlib.pyplot as plt
+import networkx as nx
+from mpl_toolkits.basemap import Basemap
+import difflib
+
+m = Basemap(projection='robin',lon_0=0,resolution='l')
+
+m.drawcountries(linewidth = 0.5)
+m.fillcontinents(color='white',lake_color='white')
+m.drawcoastlines(linewidth=0.5)
+
+# load geographic coordinate system for countries
+import csv
+country = [row[0].strip() for row in csv.reader(open('LonLat.csv'), delimiter=';')]    # clear spaces
+lat = [float(row[1]) for row in csv.reader(open('LonLat.csv'), delimiter=';')]
+lon = [float(row[2]) for row in csv.reader(open('LonLat.csv'), delimiter=';')]
+
+# define position in basemap
+position = {}
+for i in range(0, len(country)):
+    position[country[i]] = m(lon[i], lat[i])
+   
+def similar(landstring, country):
+    l = difflib.get_close_matches(landstring, country, 1)
+    return l[0]
+
+pos = dict((land, position[similar(land)]) for land in G.nodes())
+
+nx.draw_networkx_nodes(G, pos, nodelist = [key for key in part if part[key] == 0], node_size = [deg_weight[s]*10 for s in part if part[s] == 0], node_color = 'red', node_shape='^', alpha=0.8)
+nx.draw_networkx_nodes(G, pos, nodelist = [key for key in part if part[key] == 1], node_size = [deg_weight[s]*20 for s in part if part[s] == 1], node_color = 'black', node_shape='d')
+nx.draw_networkx_nodes(G, pos, nodelist = [key for key in part if part[key] == 2], node_size = [deg_weight[s]*10 for s in part if part[s] == 2], node_color = 'green', node_shape='o')
+nx.draw_networkx_nodes(G, pos, nodelist = [key for key in part if part[key] == 3], node_size = [deg_weight[s]*10 for s in part if part[s] == 3], node_color = 'blue', alpha=0.8)
+nx.draw_networkx_edges(G, pos, color='grey', width = 0.75, alpha=0.2)
+
+plt.show()
